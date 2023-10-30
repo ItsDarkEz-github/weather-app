@@ -1,37 +1,50 @@
-const container = document.querySelector('.container');
-const search = document.querySelector('.search-box button');
-const weatherBox = document.querySelector('.weather-box');
-const weatherDetails = document.querySelector('.weather-details');
-const error404 = document.querySelector('.not-found');
-
 
 window.addEventListener('load', function() {
-    if(this.navigator.geolocation) {
-        this.navigator.geolocation.getCurrentPosition((position) => {
-            this.fetch("https://ipapi.co/json/").then((response) => response.json()).then((data) => {
-                if(data.city === '') return;
-
-                this.document.querySelector('.search-box input').value = data.city;
-                getWeather(data.city);
-
-            });
-
-        });
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                fetch("https://ipapi.co/json/")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.city === '') return;
+                        document.querySelector('.search-box input').value = data.city;
+                        getWeather(data.city);
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка при запросе данных геолокации: ' + error.message);
+                    });
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
     }
-});
 
-search.addEventListener('click', () => {
 
-    const city = document.querySelector('.search-box input').value;
 
-    if (city === '')
-        return;
+    document.querySelector('.search-box button').addEventListener('click', () => {
+        const city = document.querySelector('.search-box input').value;
+        if (city === '')
+            return;
+        getWeather(city)
 
-    getWeather(city)
+    });
 
+    document.querySelector(".search-box input").addEventListener('blur', () => {
+        const city = document.querySelector('.search-box input').value;
+        if (city === '')
+            return;
+        getWeather(city)
+    });
 });
 
 function getWeather(city) {
+
+    const container = document.querySelector('.container');
+    const search = document.querySelector('.search-box button');
+    const weatherBox = document.querySelector('.weather-box');
+    const weatherDetails = document.querySelector('.weather-details');
+    const error404 = document.querySelector('.not-found');
 
     const APIKey = '60745ca83212e1f5d7c9688adbfe3cae';
 
